@@ -1,0 +1,19 @@
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  concurrency-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-redundant-parentheses,
+  -readability-implicit-bool-conversion,
+  -readability-braces-around-statements,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-math-missing-parentheses,
+  misc-*,
+
+CheckOptions:
+  misc-include-cleaner.IgnoreHeaders: 'errno.h'
+  misc-include-cleaner.MissingIncludes: false
