@@ -3,7 +3,7 @@ SRCS != ls *.c
 OBJS = $(SRCS:.c=.o)
 DEPS = $(OBJS:.o=.d)
 
-CFLAGS += -Wall -Wextra -pedantic
+CFLAGS += -Wall -Wextra -Werror -pedantic
 CFLAGS += -pthread
 #CFLAGS += -pg
 #CFLAGS += -O2 -finline-functions
@@ -12,12 +12,12 @@ CFLAGS += -MMD -MP
 LDFLAGS += -pthread
 
 # Debugging
-CFLAGS += -g3
-LDFLAGS += -g3
-CFLAGS += -fsanitize=undefined
-LDFLAGS += -fsanitize=undefined
-CFLAGS += -fsanitize=address
-LDFLAGS += -fsanitize=address
+#CFLAGS += -g3
+#LDFLAGS += -g3
+#CFLAGS += -fsanitize=undefined
+#LDFLAGS += -fsanitize=undefined
+#CFLAGS += -fsanitize=address
+#LDFLAGS += -fsanitize=address
 #CFLAGS += -fsanitize=thread
 #LDFLAGS += -fsanitize=thread
 

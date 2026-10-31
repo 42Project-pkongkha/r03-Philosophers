@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:41:53 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/16 18:53:03 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 19:10:50 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	usage(char *filename)
 {
 	printf("Usage: %s <philo_cnt> <time_die> <time_eat> <time_sleep> "
-			"[times_must_eat]\n"
+		"[times_must_eat]\n"
 		"Each argument represents\n"
 		"- philo_cnt: total count of philosophers and forks\n"
 		"- time_die: time (in ms) before philosopher dies from starving\n"

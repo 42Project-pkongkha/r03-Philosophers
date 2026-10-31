@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:40:37 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 18:11:38 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 18:43:49 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ static int	rules_init(struct s_rules *rules, int argc, char *argv[])
 }
 
 static int	philos_init(
-		struct s_philo			*philos,
-		struct s_rules			*rules,
-		struct s_guarded_bool	*all_fork,
-		struct s_guarded_bool	*sim_running
+		struct s_philo *philos,
+		struct s_rules *rules,
+		struct s_guarded_bool *all_fork,
+		struct s_guarded_bool *sim_running
 ) {
 	size_t	idx;
 
@@ -57,8 +57,8 @@ static int	philos_init(
 			philos[idx].forks[0] = &all_fork[0];
 		else
 			philos[idx].forks[0] = &all_fork[idx + (idx % 2)];
-		if (rules->philo_cnt % 2 == 1 &&
-				idx == rules->philo_cnt - 1)
+		if (rules->philo_cnt % 2 == 1
+			&& idx == rules->philo_cnt - 1)
 			philos[idx].forks[1] = &all_fork[idx];
 		else
 			philos[idx].forks[1] = &all_fork[idx + (idx % 2 == 0)];
@@ -67,7 +67,7 @@ static int	philos_init(
 	return (0);
 }
 
-static void forks_init(struct s_guarded_bool *forks, size_t n)
+static void	forks_init(struct s_guarded_bool *forks, size_t n)
 {
 	while (n)
 	{
@@ -87,8 +87,8 @@ int	sim_init(struct s_sim *sim, int argc, char *argv[])
 		return (-1);
 	}
 	sim->philos = malloc(sim->rules.philo_cnt * sizeof(*sim->philos));
-	sim->philo_thread_ids = malloc(sim->rules.philo_cnt *
-			sizeof(*sim->philo_thread_ids));
+	sim->philo_thread_ids = malloc(sim->rules.philo_cnt
+			* sizeof(*sim->philo_thread_ids));
 	sim->forks = malloc(sim->rules.philo_cnt * sizeof(*sim->forks));
 	philos_init(sim->philos, &sim->rules, sim->forks, &sim->running);
 	forks_init(sim->forks, sim->rules.philo_cnt);

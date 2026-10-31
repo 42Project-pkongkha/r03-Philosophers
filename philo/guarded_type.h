@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:26:46 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 14:46:54 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 19:10:40 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ struct s_guarded_bool
 	bool			value;
 };
 
-void	guarded_bool_write(struct s_guarded_bool *g_bool, bool value);
-bool	guarded_bool_read(struct s_guarded_bool *g_bool);
+void		guarded_bool_write(struct s_guarded_bool *g_bool, bool value);
+bool		guarded_bool_read(struct s_guarded_bool *g_bool);
 
 struct s_guarded_ssize
 {
@@ -35,8 +35,8 @@ struct s_guarded_ssize
 	ssize_t			value;
 };
 
-void	guarded_ssize_write(struct s_guarded_ssize *g_ssize, ssize_t value);
-ssize_t	guarded_ssize_read(struct s_guarded_ssize *g_ssize);
+void		guarded_ssize_write(struct s_guarded_ssize *g_ssize, ssize_t value);
+ssize_t		guarded_ssize_read(struct s_guarded_ssize *g_ssize);
 
 struct s_guarded_mseconds
 {
@@ -44,6 +44,9 @@ struct s_guarded_mseconds
 	t_mseconds		msec;
 };
 
-void		guarded_mseconds_write(struct s_guarded_mseconds *g_msec, t_mseconds msec);
+void		guarded_mseconds_write(
+				struct s_guarded_mseconds *g_msec,
+				t_mseconds msec
+				);
 t_mseconds	guarded_mseconds_read(struct s_guarded_mseconds *g_msec);
 #endif

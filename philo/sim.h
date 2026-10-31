@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:17:59 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 14:01:36 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 19:01:15 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "guarded_type.h"
 
-#include <pthread.h>
+# include <pthread.h>
 
 struct s_rules
 {
@@ -37,11 +37,12 @@ struct s_sim
 
 int			sim_init(struct s_sim *sim, int argc, char *argv[]);
 int			sim_begin(struct s_sim *sim);
+int			sim_check(struct s_sim *sim);
 void		sim_stop(struct s_sim *sim);
 void		sim_destroy(struct s_sim *sim);
 int			sim_print_philo_state(
-	struct s_guarded_bool *running,
-	size_t philo_num,
-	enum e_philo_state state);
+				struct s_guarded_bool *running,
+				size_t philo_num,
+				enum e_philo_state state);
 t_mseconds	sim_getelapsedtime_ms(void);
 #endif

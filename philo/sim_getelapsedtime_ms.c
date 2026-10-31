@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/30 17:32:22 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/30 18:26:43 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 18:44:11 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,5 @@ t_mseconds	sim_getelapsedtime_ms(void)
 		initialized = true;
 	}
 	return (((uint64_t)(currtime.tv_sec - starttime.tv_sec) * 1000000
-			+ (currtime.tv_usec - starttime.tv_usec)) / 1000);
+		+ (currtime.tv_usec - starttime.tv_usec)) / 1000);
 }
