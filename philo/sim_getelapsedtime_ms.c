@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   guarded_ssize_t_read.c                             :+:      :+:    :+:   */
+/*   sim_getelapsedtime_ms.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/25 19:53:57 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/25 19:54:17 by pkongkha         ###   ########.fr       */
+/*   Created: 2026/10/30 17:32:22 by pkongkha          #+#    #+#             */
+/*   Updated: 2026/10/30 18:26:43 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "guarded_type.h"
+#include "sim.h"
 
-ssize_t	guarded_ssize_t_read(struct s_guarded_ssize_t *var)
+#include <sys/time.h>
+
+t_mseconds	sim_getelapsedtime_ms(void)
 {
-	ssize_t	value;
+	static bool				initialized;
+	static struct timeval	starttime;
+	struct timeval			currtime;
 
-	pthread_mutex_lock(&var->lock);
-	value = var->value;
-	pthread_mutex_unlock(&var->lock);
-	return (value);
+	gettimeofday(&currtime, NULL);
+	if (!initialized)
+	{
+		starttime = currtime;
+		initialized = true;
+	}
+	return (((uint64_t)(currtime.tv_sec - starttime.tv_sec) * 1000000
+			+ (currtime.tv_usec - starttime.tv_usec)) / 1000);
 }

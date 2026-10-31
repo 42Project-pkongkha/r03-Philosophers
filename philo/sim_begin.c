@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:39:30 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/25 23:57:00 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 18:31:03 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 #include "philo.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <sys/time.h>
 
 static void	join_threads(pthread_t *threads, size_t n)
 {
@@ -34,39 +34,31 @@ static void	join_threads(pthread_t *threads, size_t n)
 
 int	sim_begin(struct s_sim *sim)
 {
-	size_t							idx;
-	struct s_philo_routine_params	*params;
-	struct s_table					*tbl = &sim->table;
+	size_t			idx;
+	struct s_rules	*rules = &sim->rules;
 
 	pthread_mutex_lock(&sim->running.lock);
 	idx = 0;
-	while (idx < tbl->philo_cnt)
+	while (idx < rules->philo_cnt)
 	{
-		params = malloc(sizeof(*params));
-		if (!params)
+		if (pthread_create(&sim->philo_thread_ids[idx], NULL, philo_routine, &sim->philos[idx]))
 		{
 			pthread_mutex_unlock(&sim->running.lock);
-			join_threads(tbl->philo_thread_ids, idx);
-			return (-ENOMEM);
-		}
-		*params = (struct s_philo_routine_params){
-			.philo_num = idx,
-			.sim = sim,
-		};
-		if (pthread_create(&tbl->philo_thread_ids[idx], NULL, philo_routine, params))
-		{
-			free(params);
-			pthread_mutex_unlock(&sim->running.lock);
-			join_threads(tbl->philo_thread_ids, idx);
+			join_threads(sim->philo_thread_ids, idx);
+			printf("sim_begin: cannot create new thread\n");
 			return (-EAGAIN);
 		}
 		++idx;
 	}
 	sim->running.value = true;
-	gettimeofday(&sim->time_begin, NULL);
 	idx = 0;
-	while (idx < tbl->philo_cnt)
-		guarded_timeval_write(&tbl->philos[idx++].last_eat, sim->time_begin);
+	while (idx < rules->philo_cnt)
+	{
+		sim->philos[idx].cnt_eaten.value = 0;
+		sim->philos[idx].last_eat.msec = 0;
+		++idx;
+	}
+	sim_getelapsedtime_ms();
 	pthread_mutex_unlock(&sim->running.lock);
 	return (0);
 }

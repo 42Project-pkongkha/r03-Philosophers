@@ -6,22 +6,22 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:33:38 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/25 19:46:38 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 14:53:41 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "guarded_type.h"
 #include "sim.h"
 
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <sys/time.h>
 
-int	sim_print_philo_state(struct s_sim *sim, size_t philo_num,
+int	sim_print_philo_state(
+		struct s_guarded_bool *running,
+		size_t philo_num,
 		enum e_philo_state state)
 {
-	struct timeval		tv_curr;
 	const char *const	state_str[] = {
 	[PHILO_TAKEN_FORK] = "has taken a fork",
 	[PHILO_EATING] = "is eating",
@@ -30,18 +30,16 @@ int	sim_print_philo_state(struct s_sim *sim, size_t philo_num,
 	[PHILO_DIED] = "died",
 	};
 
-	gettimeofday(&tv_curr, NULL);
-	pthread_mutex_lock(&sim->running.lock);
-	if (state != PHILO_DIED && !sim->running.value)
+	pthread_mutex_lock(&running->lock);
+	if (state != PHILO_DIED && !running->value)
 	{
-		pthread_mutex_unlock(&sim->running.lock);
+		pthread_mutex_unlock(&running->lock);
 		return (ECANCELED);
 	}
 	printf("%ld %zu %s\n",
-		(tv_curr.tv_sec - sim->time_begin.tv_sec) * 1000
-		+ (tv_curr.tv_usec - sim->time_begin.tv_usec) / 1000,
+		sim_getelapsedtime_ms(),
 		philo_num,
 		state_str[state]);
-	pthread_mutex_unlock(&sim->running.lock);
+	pthread_mutex_unlock(&running->lock);
 	return (0);
 }

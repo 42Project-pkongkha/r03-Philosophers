@@ -6,10 +6,12 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:40:37 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/25 23:08:57 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/10/31 18:11:38 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "guarded_type.h"
+#include "philo.h"
 #include "sim.h"
 
 #include "usage.h"
@@ -19,93 +21,79 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <unistd.h>
 
-static int	parseargs(struct s_sim *sim, int argc, char *argv[])
+static int	rules_init(struct s_rules *rules, int argc, char *argv[])
 {
-	sim->table.philo_cnt = ft_atoi(argv[1]);
-	sim->rules = (struct s_rules){
-		.time_die = {
-		.tv_sec = ft_atoi(argv[2]) / 1000,
-		.tv_usec = (useconds_t)(ft_atoi(argv[2]) % 1000 * 1000),
-	},
-		.time_eat = ft_atoi(argv[3]) * 1000,
-		.time_sleep = ft_atoi(argv[4]) * 1000,
+	*rules = (struct s_rules){
+		.philo_cnt = ft_atoi(argv[1]),
+		.time_die = ft_atoi(argv[2]),
+		.time_eat = ft_atoi(argv[3]),
+		.time_sleep = ft_atoi(argv[4]),
 	};
-	if (argc < 6)
-		sim->rules.cnt_eat_to_success = -1;
+	if (argc == 6)
+		rules->cnt_eat_to_success = ft_atoi(argv[5]);
 	else
-		sim->rules.cnt_eat_to_success = ft_atoi(argv[5]);
+		rules->cnt_eat_to_success = -1;
 	return (0);
 }
 
-static void	mutexes_init(pthread_mutex_t *mutexes, size_t n)
-{
+static int	philos_init(
+		struct s_philo			*philos,
+		struct s_rules			*rules,
+		struct s_guarded_bool	*all_fork,
+		struct s_guarded_bool	*sim_running
+) {
 	size_t	idx;
 
 	idx = 0;
-	while (idx < n)
-		pthread_mutex_init(&mutexes[idx++], NULL);
+	while (idx < rules->philo_cnt)
+	{
+		philos[idx].sim_running = sim_running;
+		philos[idx].rules = rules;
+		philos[idx].num = idx;
+		pthread_mutex_init(&philos[idx].cnt_eaten.lock, NULL);
+		pthread_mutex_init(&philos[idx].last_eat.lock, NULL);
+		if (idx == rules->philo_cnt - 1)
+			philos[idx].forks[0] = &all_fork[0];
+		else
+			philos[idx].forks[0] = &all_fork[idx + (idx % 2)];
+		if (rules->philo_cnt % 2 == 1 &&
+				idx == rules->philo_cnt - 1)
+			philos[idx].forks[1] = &all_fork[idx];
+		else
+			philos[idx].forks[1] = &all_fork[idx + (idx % 2 == 0)];
+		++idx;
+	}
+	return (0);
 }
 
-static void	philo_init(struct s_philo *philos, size_t n)
+static void forks_init(struct s_guarded_bool *forks, size_t n)
 {
-	size_t	idx;
-
-	idx = 0;
-	while (idx < n)
+	while (n)
 	{
-		philos->cnt_eaten.value = 0;
-		pthread_mutex_init(&philos->cnt_eaten.lock, NULL);
-		philos->last_eat.tv = (struct timeval){
-			.tv_sec = 0,
-			.tv_usec = 0,
-		};
-		pthread_mutex_init(&philos->last_eat.lock, NULL);
-		++philos;
-		++idx;
+		forks->value = true;
+		pthread_mutex_init(&forks->lock, NULL);
+		++forks;
+		--n;
 	}
 }
 
 // NOLINTBEGIN(misc-non-copyable-objects)
-static int	table_init(struct s_table *table)
-{
-	table->philos = malloc(table->philo_cnt * sizeof(*table->philos));
-	if (!table->philos)
-		return (ENOMEM);
-	table->philo_thread_ids =
-		malloc(table->philo_cnt * sizeof(*table->philo_thread_ids));
-	if (!table->philo_thread_ids)
-	{
-		free(table->philos);
-		return (ENOMEM);
-	}
-	table->forks = malloc(table->philo_cnt * sizeof(*table->forks));
-	if (!table->forks)
-	{
-		free(table->philos);
-		free(table->philo_thread_ids);
-		return (ENOMEM);
-	}
-	philo_init(table->philos, table->philo_cnt);
-	mutexes_init(table->forks, table->philo_cnt);
-	return (0);
-}
-// NOLINTEND(misc-non-copyable-objects)
-
 int	sim_init(struct s_sim *sim, int argc, char *argv[])
 {
-	int	rc;
-
-	if (parseargs(sim, argc, argv))
+	if (rules_init(&sim->rules, argc, argv))
 	{
 		usage(argv[0]);
 		return (-1);
 	}
-	rc = table_init(&sim->table);
-	if (rc)
-		return (rc);
-	pthread_mutex_init(&sim->running.lock, NULL);
+	sim->philos = malloc(sim->rules.philo_cnt * sizeof(*sim->philos));
+	sim->philo_thread_ids = malloc(sim->rules.philo_cnt *
+			sizeof(*sim->philo_thread_ids));
+	sim->forks = malloc(sim->rules.philo_cnt * sizeof(*sim->forks));
+	philos_init(sim->philos, &sim->rules, sim->forks, &sim->running);
+	forks_init(sim->forks, sim->rules.philo_cnt);
 	sim->running.value = false;
+	pthread_mutex_init(&sim->running.lock, NULL);
 	return (0);
 }
+// NOLINTEND(misc-non-copyable-objects)
