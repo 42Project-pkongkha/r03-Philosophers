@@ -6,50 +6,28 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/31 19:00:39 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/01 21:29:22 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 22:07:02 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "philo_types.h"
 #include "sim.h"
 #include "philo.h"
 
-static int	sim_check_full(struct s_sim *sim)
-{
-	size_t					idx;
-	struct s_rules *const	rules = &sim->rules;
+static bool	is_cond_end(
+		struct s_sim *sim,
+		t_mseconds eat_deadline,
+		bool all_ate_enough
+) {
+	size_t	idx;
 
-	if (rules->cnt_eat_to_success >= 0)
-	{
-		idx = 0;
-		while (idx < rules->philo_cnt)
-		{
-			if (guarded_int_read(&sim->philos[idx].cnt_eaten)
-				< rules->cnt_eat_to_success)
-				break ;
-			++idx;
-		}
-		if (idx == rules->philo_cnt)
-			return (1);
-	}
-	return (0);
-}
-
-static int	sim_check_died(struct s_sim *sim)
-{
-	struct s_rules *const	rules = &sim->rules;
-	size_t					idx;
-	t_mseconds				eat_deadline;
-
-	if (sim_getelapsedtime_ms() < rules->time_die)
-		return (0);
-	eat_deadline = sim_getelapsedtime_ms() - rules->time_die;
 	idx = 0;
-	while (idx < rules->philo_cnt)
+	while (idx < sim->rules.philo_cnt)
 	{
-		if (!(rules->cnt_eat_to_success != -1
-				&& guarded_int_read(&sim->philos[idx].cnt_eaten)
-				== rules->cnt_eat_to_success))
+		if (guarded_int_read(&sim->philos[idx].cnt_eaten)
+			!= sim->rules.cnt_eat_to_success)
 		{
+			all_ate_enough = false;
 			if (guarded_mseconds_read(&sim->philos[idx].last_eat)
 				< eat_deadline)
 			{
@@ -60,18 +38,21 @@ static int	sim_check_died(struct s_sim *sim)
 		}
 		++idx;
 	}
-	return (0);
+	return (all_ate_enough);
 }
 
+// NOLINTBEGIN(readability-inconsistent-ifelse-braces)
 int	sim_check(struct s_sim *sim)
 {
-	int	rc;
+	struct s_rules *const	rules = &sim->rules;
+	const t_mseconds		now = sim_getelapsedtime_ms();
+	t_mseconds				eat_deadline;
+	bool					all_ate_enough;
 
-	rc = sim_check_full(sim);
-	if (rc)
-		return (rc);
-	rc = sim_check_died(sim);
-	if (rc)
-		return (rc);
-	return (0);
+	if (now < rules->time_die)
+		return (0);
+	eat_deadline = now - rules->time_die;
+	all_ate_enough = rules->cnt_eat_to_success != -1;
+	return (is_cond_end(sim, eat_deadline, all_ate_enough));
 }
+// NOLINTEND(readability-inconsistent-ifelse-braces)
