@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:17:59 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 19:01:15 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:23:17 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 struct s_rules
 {
 	size_t		philo_cnt;
-	ssize_t		cnt_eat_to_success;
+	int			cnt_eat_to_success;
 	t_mseconds	time_die;
 	t_mseconds	time_eat;
 	t_mseconds	time_sleep;

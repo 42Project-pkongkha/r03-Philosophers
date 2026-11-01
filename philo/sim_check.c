@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/31 19:00:39 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 19:07:22 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:29:22 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	sim_check_full(struct s_sim *sim)
 		idx = 0;
 		while (idx < rules->philo_cnt)
 		{
-			if (guarded_ssize_read(&sim->philos[idx].cnt_eaten)
+			if (guarded_int_read(&sim->philos[idx].cnt_eaten)
 				< rules->cnt_eat_to_success)
 				break ;
 			++idx;
@@ -47,7 +47,7 @@ static int	sim_check_died(struct s_sim *sim)
 	while (idx < rules->philo_cnt)
 	{
 		if (!(rules->cnt_eat_to_success != -1
-				&& guarded_ssize_read(&sim->philos[idx].cnt_eaten)
+				&& guarded_int_read(&sim->philos[idx].cnt_eaten)
 				== rules->cnt_eat_to_success))
 		{
 			if (guarded_mseconds_read(&sim->philos[idx].last_eat)

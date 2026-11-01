@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:38:58 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 19:11:27 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:29:09 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static void	philo_routine_loop(
 		fork_return(self->forks[1]);
 		fork_return(self->forks[0]);
 		if (rules->cnt_eat_to_success > 0
-			&& (guarded_ssize_read(&self->cnt_eaten)
+			&& (guarded_int_read(&self->cnt_eaten)
 				>= rules->cnt_eat_to_success))
 			pthread_exit(NULL);
 		if (sim_print_philo_state(self->sim_running, self->num, PHILO_SLEEPING))

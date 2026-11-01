@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:32:02 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 18:59:27 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:28:48 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ struct s_philo
 	struct s_rules				*rules;
 	struct s_guarded_bool		*forks[2];
 	size_t						num;
-	struct s_guarded_ssize		cnt_eaten;
+	struct s_guarded_int		cnt_eaten;
 	struct s_guarded_mseconds	last_eat;
 };
 

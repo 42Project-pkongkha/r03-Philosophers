@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   guarded_ssize_read.c                               :+:      :+:    :+:   */
+/*   guarded_int_read.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/25 19:53:57 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 14:48:09 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:30:25 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "guarded_type.h"
 
-inline ssize_t	guarded_ssize_read(struct s_guarded_ssize *g_ssize)
+inline int	guarded_int_read(struct s_guarded_int *g_int)
 {
-	ssize_t	value;
+	int	value;
 
-	pthread_mutex_lock(&g_ssize->lock);
-	value = g_ssize->value;
-	pthread_mutex_unlock(&g_ssize->lock);
+	pthread_mutex_lock(&g_int->lock);
+	value = g_int->value;
+	pthread_mutex_unlock(&g_int->lock);
 	return (value);
 }

@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:35:29 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 19:11:15 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:05:02 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static int	is_all_digits(char *s)
 	return (1);
 }
 
-int	is_args_valid(int argc, char **argv)
+static int	is_args_valid(int argc, char **argv)
 {
 	if (!is_all_digits(argv[1])
 		|| !is_all_digits(argv[2])

@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:26:46 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 19:10:40 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/01 21:27:47 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ struct s_guarded_bool
 void		guarded_bool_write(struct s_guarded_bool *g_bool, bool value);
 bool		guarded_bool_read(struct s_guarded_bool *g_bool);
 
-struct s_guarded_ssize
+struct s_guarded_int
 {
 	pthread_mutex_t	lock;
-	ssize_t			value;
+	int				value;
 };
 
-void		guarded_ssize_write(struct s_guarded_ssize *g_ssize, ssize_t value);
-ssize_t		guarded_ssize_read(struct s_guarded_ssize *g_ssize);
+void		guarded_int_write(struct s_guarded_int *g_int, int value);
+int			guarded_int_read(struct s_guarded_int *g_int);
 
 struct s_guarded_mseconds
 {
