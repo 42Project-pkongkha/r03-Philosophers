@@ -1,24 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sim_print_philo_state.c                            :+:      :+:    :+:   */
+/*   print_philo_state.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:33:38 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 14:53:41 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/02 22:49:48 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "guarded_type.h"
+
+#include "philo.h"
 #include "sim.h"
 
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
 
-int	sim_print_philo_state(
-		struct s_guarded_bool *running,
+int	print_philo_state(
+		struct s_sim *sim,
 		size_t philo_num,
 		enum e_philo_state state)
 {
@@ -30,16 +32,16 @@ int	sim_print_philo_state(
 	[PHILO_DIED] = "died",
 	};
 
-	pthread_mutex_lock(&running->lock);
-	if (state != PHILO_DIED && !running->value)
+	pthread_mutex_lock(&sim->running.lock);
+	if (state != PHILO_DIED && !sim->running.value)
 	{
-		pthread_mutex_unlock(&running->lock);
+		pthread_mutex_unlock(&sim->running.lock);
 		return (ECANCELED);
 	}
 	printf("%ld %zu %s\n",
-		sim_getelapsedtime_ms(),
+		gettime_ms() - sim->time_start,
 		philo_num,
 		state_str[state]);
-	pthread_mutex_unlock(&running->lock);
+	pthread_mutex_unlock(&sim->running.lock);
 	return (0);
 }

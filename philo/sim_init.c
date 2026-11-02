@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:40:37 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 18:43:49 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 01:37:50 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,16 @@ static int	rules_init(struct s_rules *rules, int argc, char *argv[])
 
 static int	philos_init(
 		struct s_philo *philos,
+		struct s_sim *sim,
 		struct s_rules *rules,
-		struct s_guarded_bool *all_fork,
-		struct s_guarded_bool *sim_running
+		struct s_guarded_bool *all_fork
 ) {
 	size_t	idx;
 
 	idx = 0;
 	while (idx < rules->philo_cnt)
 	{
-		philos[idx].sim_running = sim_running;
+		philos[idx].sim = sim;
 		philos[idx].rules = rules;
 		philos[idx].num = idx;
 		pthread_mutex_init(&philos[idx].cnt_eaten.lock, NULL);
@@ -90,7 +90,7 @@ int	sim_init(struct s_sim *sim, int argc, char *argv[])
 	sim->philo_thread_ids = malloc(sim->rules.philo_cnt
 			* sizeof(*sim->philo_thread_ids));
 	sim->forks = malloc(sim->rules.philo_cnt * sizeof(*sim->forks));
-	philos_init(sim->philos, &sim->rules, sim->forks, &sim->running);
+	philos_init(sim->philos, sim, &sim->rules, sim->forks);
 	forks_init(sim->forks, sim->rules.philo_cnt);
 	sim->running.value = false;
 	pthread_mutex_init(&sim->running.lock, NULL);

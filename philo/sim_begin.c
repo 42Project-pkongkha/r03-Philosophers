@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:39:30 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/10/31 18:48:47 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 01:44:36 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "philo.h"
 
+#include <asm-generic/errno.h>
 #include <errno.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -45,16 +46,15 @@ static void	sim_begin_philo_init(struct s_sim *sim)
 	}
 }
 
-int	sim_begin(struct s_sim *sim)
+static int	sim_begin_philo_spawn(struct s_sim *sim)
 {
 	size_t					idx;
 	struct s_rules *const	rules = &sim->rules;
 
-	pthread_mutex_lock(&sim->running.lock);
-	sim_begin_philo_init(sim);
 	idx = 0;
 	while (idx < rules->philo_cnt)
 	{
+		sim->philos[idx].last_eat.msec = sim->time_start;
 		if (pthread_create(&sim->philo_thread_ids[idx], NULL, philo_routine,
 				&sim->philos[idx]))
 		{
@@ -65,8 +65,25 @@ int	sim_begin(struct s_sim *sim)
 		}
 		++idx;
 	}
+	return (0);
+}
+
+int	sim_begin(struct s_sim *sim)
+{
+	int	rc;
+
+	pthread_mutex_lock(&sim->running.lock);
+	sim_begin_philo_init(sim);
+	sim->time_start = gettime_ms() + 5 * sim->rules.philo_cnt;
+	rc = sim_begin_philo_spawn(sim);
+	if (rc)
+		return (rc);
+	if (gettime_ms() > sim->time_start)
+	{
+		printf("sim_begin: uses too much time to create thread\n");
+		return (-ETIMEDOUT);
+	}
 	sim->running.value = true;
-	sim_getelapsedtime_ms();
 	pthread_mutex_unlock(&sim->running.lock);
 	return (0);
 }

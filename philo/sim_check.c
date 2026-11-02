@@ -6,13 +6,14 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/31 19:00:39 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/01 22:07:02 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 00:27:06 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_types.h"
 #include "sim.h"
 #include "philo.h"
+#include <pthread.h>
 
 static bool	is_cond_end(
 		struct s_sim *sim,
@@ -28,13 +29,15 @@ static bool	is_cond_end(
 			!= sim->rules.cnt_eat_to_success)
 		{
 			all_ate_enough = false;
-			if (guarded_mseconds_read(&sim->philos[idx].last_eat)
-				< eat_deadline)
+			pthread_mutex_lock(&sim->philos[idx].last_eat.lock);
+			if (sim->philos[idx].last_eat.msec < eat_deadline)
 			{
 				guarded_bool_write(&sim->running, false);
-				sim_print_philo_state(&sim->running, idx, PHILO_DIED);
+				pthread_mutex_unlock(&sim->philos[idx].last_eat.lock);
+				print_philo_state(sim, idx, PHILO_DIED);
 				return (1);
 			}
+			pthread_mutex_unlock(&sim->philos[idx].last_eat.lock);
 		}
 		++idx;
 	}
@@ -45,11 +48,12 @@ static bool	is_cond_end(
 int	sim_check(struct s_sim *sim)
 {
 	struct s_rules *const	rules = &sim->rules;
-	const t_mseconds		now = sim_getelapsedtime_ms();
+	const t_mseconds		now = gettime_ms();
 	t_mseconds				eat_deadline;
 	bool					all_ate_enough;
 
-	if (now < rules->time_die)
+	if (now < sim->time_start
+		&& now - sim->time_start < rules->time_die)
 		return (0);
 	eat_deadline = now - rules->time_die;
 	all_ate_enough = rules->cnt_eat_to_success != -1;

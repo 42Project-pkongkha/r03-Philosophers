@@ -6,7 +6,7 @@ DEPS = $(OBJS:.o=.d)
 CFLAGS += -Wall -Wextra -Werror -pedantic
 CFLAGS += -pthread
 #CFLAGS += -pg
-#CFLAGS += -O2 -finline-functions
+CFLAGS += -O2 -finline-functions
 CFLAGS += -MMD -MP
 #CFLAGS += -fstack-protector-all
 LDFLAGS += -pthread
