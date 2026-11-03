@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 16:17:59 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/03 01:38:19 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 15:10:18 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ struct s_sim
 	struct s_rules			rules;
 	struct s_philo			*philos;
 	pthread_t				*philo_thread_ids;
-	struct s_guarded_bool	*forks;
+	pthread_mutex_t			*forks;
 };
 
 int			sim_init(struct s_sim *sim, int argc, char *argv[]);

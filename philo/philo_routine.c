@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:38:58 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/03 14:12:14 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 15:21:45 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include "sim.h"
 
-#include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -48,6 +47,17 @@ static void	wait_before_next_eat(struct s_philo *self)
 	usleep(time_left * 1000 - 5000);
 }
 
+static void	mutex_unlock_then_pthr_exit(
+		pthread_mutex_t *lock1,
+		pthread_mutex_t *lock2
+) {
+	if (lock1)
+		pthread_mutex_unlock(lock1);
+	if (lock2)
+		pthread_mutex_unlock(lock2);
+	pthread_exit(NULL);
+}
+
 static void	philo_routine_loop(
 		struct s_philo *self
 ) {
@@ -55,14 +65,14 @@ static void	philo_routine_loop(
 
 	while (1)
 	{
-		fork_take(self->forks[0]);
+		pthread_mutex_lock(self->forks[0]);
 		if (print_philo_state(self->sim, self->num, PHILO_TAKEN_FORK))
-			fork_return_then_pthr_exit(self->forks[0], NULL);
-		fork_take(self->forks[1]);
+			mutex_unlock_then_pthr_exit(self->forks[0], NULL);
+		pthread_mutex_lock(self->forks[1]);
 		if (philo_eat(self))
-			fork_return_then_pthr_exit(self->forks[0], self->forks[1]);
-		fork_return(self->forks[1]);
-		fork_return(self->forks[0]);
+			mutex_unlock_then_pthr_exit(self->forks[0], self->forks[1]);
+		pthread_mutex_unlock(self->forks[1]);
+		pthread_mutex_unlock(self->forks[0]);
 		if (rules->cnt_eat_to_success > 0
 			&& (guarded_int_read(&self->cnt_eaten)
 				>= rules->cnt_eat_to_success))
@@ -76,25 +86,13 @@ static void	philo_routine_loop(
 	}
 }
 
-// He died from loneliness
-static void	philo_is_so_alone(
-		struct s_sim *sim,
-		size_t philo_num,
-		struct s_guarded_bool *fork
-) {
-	guarded_bool_write(fork, false);
-	print_philo_state(sim, philo_num, PHILO_TAKEN_FORK);
-	guarded_bool_write(fork, true);
-	pthread_exit(NULL);
-}
-
 void	*philo_routine(void *arg)
 {
 	struct s_philo	*self;
 
 	self = ((struct s_philo *)arg);
 	while (gettime_ms() < self->sim->time_start)
-		usleep(50);
+		usleep(200);
 	if (self->rules->philo_cnt == 1)
 		philo_is_so_alone(self->sim, self->num, self->forks[0]);
 	if (guarded_bool_read(&self->sim->running))

@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:40:37 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/03 01:37:50 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 15:12:08 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	philos_init(
 		struct s_philo *philos,
 		struct s_sim *sim,
 		struct s_rules *rules,
-		struct s_guarded_bool *all_fork
+		pthread_mutex_t *all_fork
 ) {
 	size_t	idx;
 
@@ -67,12 +67,11 @@ static int	philos_init(
 	return (0);
 }
 
-static void	forks_init(struct s_guarded_bool *forks, size_t n)
+static void	forks_init(pthread_mutex_t *forks, size_t n)
 {
 	while (n)
 	{
-		forks->value = true;
-		pthread_mutex_init(&forks->lock, NULL);
+		pthread_mutex_init(forks, NULL);
 		++forks;
 		--n;
 	}
