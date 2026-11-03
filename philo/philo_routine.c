@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:38:58 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/03 01:38:05 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/03 14:12:14 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,10 @@ void	*philo_routine(void *arg)
 	struct s_philo	*self;
 
 	self = ((struct s_philo *)arg);
-	if (self->rules->philo_cnt == 1)
-		philo_is_so_alone(self->sim, self->num, self->forks[0]);
 	while (gettime_ms() < self->sim->time_start)
 		usleep(50);
+	if (self->rules->philo_cnt == 1)
+		philo_is_so_alone(self->sim, self->num, self->forks[0]);
 	if (guarded_bool_read(&self->sim->running))
 	{
 		if (self->num % 2 == 0)
