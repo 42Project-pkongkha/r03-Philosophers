@@ -6,7 +6,7 @@
 /*   By: pkongkha <pkongkha@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:33:38 by pkongkha          #+#    #+#             */
-/*   Updated: 2026/11/02 22:49:48 by pkongkha         ###   ########.fr       */
+/*   Updated: 2026/11/04 14:09:44 by pkongkha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	print_philo_state(
 	}
 	printf("%ld %zu %s\n",
 		gettime_ms() - sim->time_start,
-		philo_num,
+		philo_num + 1,
 		state_str[state]);
 	pthread_mutex_unlock(&sim->running.lock);
 	return (0);
